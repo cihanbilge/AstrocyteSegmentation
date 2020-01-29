@@ -14,8 +14,18 @@ astrocytes_dataGeneration(image_list, subimage_size);
 %Some boxes might overlap. One cell should be covered by one box. For our
 %dataset this value is set to 128. 
 
+%this part generates sub images to be segmented by the GESU-net. Images 
+%firstly analyzed to find possible astrocyte regions. Then, sub images are 
+%generated for each of the detection. These subimages are saved to the 
+%directory. Then GESU-net must be fed by these sub images and associated 
+%segmentations will be generated. These segmentations will be collected by 
+%the below postprocessing step, processed according to morphology and bad 
+%segmentations will be eliminated.  
+
 astrocytes_postProcessing(image_list, subimage_size);
-%segmented images are saved in target directory.
+%segmented images are processed and properly located in the original image. 
+%the output will be a rgb image, formed by the original image (red channel)
+%and segmented cells (green channel), which is saved in the target directory.
 
 
 %Cihan Bilge Kayasandik, Demetrio Labate
