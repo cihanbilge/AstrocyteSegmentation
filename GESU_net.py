@@ -9,8 +9,6 @@ from keras_applications import vgg16
 from keras import backend as kerasB
 import keras as KR
 from data import *
-from dice_coef_loss import *
-from conv2d_LC_layer import Conv2D_LC
 from conv2d_LC_layer import Conv2D_LC
 
 #import test_predict
