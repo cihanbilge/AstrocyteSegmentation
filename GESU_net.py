@@ -34,8 +34,8 @@ class myGESUnet(object):
       imgs_train, imgs_mask_train = mydata.load_train_data()
       imgs_test = mydata.load_test_data()
 
-      #imgs_train /= 255
-      #imgs_test /= 255
+      imgs_train /= 255
+      imgs_test /= 255
       return imgs_train, imgs_mask_train, imgs_test
 
 
@@ -47,62 +47,63 @@ class myGESUnet(object):
       #data_format = 'channels_last'
       #num_classes = 2
 
-      S = 3
-      K = (5, 5)
-      conv1 = Conv2D_LC(num_filters=16, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      S = 9
+      K = (3, 3)
+      nf=64
+      conv1 = Conv2D_LC(num_filters=nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                     kernel_initializer='he_normal')(inputs)
-      conv1 = Conv2D_LC(num_filters=32, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv1 = Conv2D_LC(num_filters=nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                         kernel_initializer='he_normal')(conv1)
-      conv1 = Conv2D_LC(num_filters=32, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv1 = Conv2D_LC(num_filters=nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                     kernel_initializer='he_normal')(conv1)
       pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
 
-      conv2 = Conv2D_LC(num_filters=64, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv2 = Conv2D_LC(num_filters=2*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                         kernel_initializer='he_normal')(pool1)
-      conv2 = Conv2D_LC(num_filters=128, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv2 = Conv2D_LC(num_filters=2*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                     kernel_initializer='he_normal')(conv2)
-      conv2 = Conv2D_LC(num_filters=256, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv2 = Conv2D_LC(num_filters=2*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                     kernel_initializer='he_normal')(conv2)
       pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
 
-      conv3 = Conv2D_LC(num_filters=256, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv3 = Conv2D_LC(num_filters=4*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                     kernel_initializer='he_normal')(pool2)
-      conv3 = Conv2D_LC(num_filters=256, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv3 = Conv2D_LC(num_filters=4*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                         kernel_initializer='he_normal')(conv3)
-      conv3 = Conv2D_LC(num_filters=512, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv3 = Conv2D_LC(num_filters=4*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                     kernel_initializer='he_normal')(conv3)
       pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
 
-      conv4 = Conv2D_LC(num_filters=1024, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv4 = Conv2D_LC(num_filters=8*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                     kernel_initializer='he_normal')(pool3)
-      conv4 = Conv2D_LC(num_filters=2048, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv4 = Conv2D_LC(num_filters=8*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                         kernel_initializer='he_normal')(conv4)
-      conv4 = Conv2D_LC(num_filters=1024, kernel_size=K, sample_size=S, activation='relu', padding='same',
+      conv4 = Conv2D_LC(num_filters=8*nf, kernel_size=K, sample_size=S, activation='relu', padding='same',
                     kernel_initializer='he_normal')(conv4)
 
-      up7 = Conv2D(1024, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
+      up7 = Conv2D(4*nf, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
          UpSampling2D(size=(2, 2))(conv4))
       merge7 = concatenate([conv3, up7], axis=3)
-      conv7 = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge7)
-      conv7 = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv7)
+      conv7 = Conv2D(4*nf, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge7)
+      conv7 = Conv2D(4*nf, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv7)
 
-      up8 = Conv2D(256, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
+      up8 = Conv2D(2*nf, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
          UpSampling2D(size=(2, 2))(conv7))
       merge8 = concatenate([conv2, up8], axis=3)
-      conv8 = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge8)
-      conv8 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8)
+      conv8 = Conv2D(2*nf, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge8)
+      conv8 = Conv2D(2*nf, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8)
 
-      up9 = Conv2D(128, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
+      up9 = Conv2D(nf, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
          UpSampling2D(size=(2, 2))(conv8))
       merge9 = concatenate([conv1, up9], axis=3)
-      conv9 = Conv2D(128, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge9)
-      conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
-      conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
+      conv9 = Conv2D(nf, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge9)
       conv9 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
-      conv9 = Conv2D(16, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
-      conv9 = Conv2D(1, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
+      #conv9 = Conv2D(64, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
+      #conv9 = Conv2D(32, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
+      #conv9 = Conv2D(16, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv9)
+      conv9 = Conv2D(1, 3, activation='sigmoid', padding='same', kernel_initializer='he_normal')(conv9)
 
-      inputsT = concatenate([inputs, concatenate([conv9, conv9], axis=3)], axis=3)
+      inputsT = concatenate([inputs, concatenate([inputs, conv9], axis=3)], axis=3)
 
       modelA = Model(inputs=inputs, output=inputsT)
 
@@ -125,13 +126,13 @@ class myGESUnet(object):
       x5 = vgg_conv.get_layer('block5_pool').output
       x6 = vgg_conv.get_layer('block5_conv3').output
 
-      conv5t = Conv2D(1024, 3, activation='relu', padding='same', kernel_initializer='he_normal')(x5)
+      conv5t = Conv2D(2048, 3, activation='relu', padding='same', kernel_initializer='he_normal')(x5)
       conv5t = Conv2D(2048, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv5t)
-      drop6t=conv5t
+      
 
       
       up6t = Conv2D(1024, 2, activation='relu', padding='same', kernel_initializer='he_normal')(
-         UpSampling2D(size=(2, 2))(drop6t))
+         UpSampling2D(size=(2, 2))(conv5t))
       
       merge6t = concatenate([x6, up6t], axis=3)
       conv6t = Conv2D(1024, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge6t)
@@ -143,7 +144,7 @@ class myGESUnet(object):
       
 
       merge7t = concatenate([x4, up7t], axis=3)
-      conv7t = Conv2D(1024, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge7t)
+      conv7t = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge7t)
       conv7t = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv7t)
       
 
@@ -151,7 +152,7 @@ class myGESUnet(object):
          UpSampling2D(size=(2, 2))(conv7t))
       
       merge8t = concatenate([x3, up8t], axis=3)
-      conv8t = Conv2D(512, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge8t)
+      conv8t = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(merge8t)
       conv8t = Conv2D(256, 3, activation='relu', padding='same', kernel_initializer='he_normal')(conv8t)
       
 
@@ -178,7 +179,7 @@ class myGESUnet(object):
       modelC = Model(inputs=inputs, output=Out)
 
 
-      modelC.compile(optimizer=Adam(lr=0.00000025), loss="mean_squared_error", metrics=['accuracy'])
+      modelC.compile(optimizer=Adam(lr=0.000025), loss="mean_squared_error", metrics=['accuracy'])
 
       return modelC
 
@@ -194,12 +195,12 @@ class myGESUnet(object):
       model_checkpoint = ModelCheckpoint('Model_GESU.hdf5', monitor='loss',verbose=1, save_best_only=True)
       print('Fitting model...')
       #class weights optional, if planing to use update the array size 
-      class_weights = np.zeros((16384,2))
-      class_weights[:,0] += 1
-      class_weights[:,1] += 50
+      #class_weights = np.zeros((16384,2))
+      #class_weights[:,0] += 1
+      #class_weights[:,1] += 50
 
 
-      history = model.fit(imgs_train, imgs_mask_train, batch_size=10, verbose=2, nb_epoch=2000, class_weight=class_weights, validation_split=0.2, shuffle=True, callbacks=[model_checkpoint])
+      history = model.fit(imgs_train, imgs_mask_train, batch_size=10, verbose=2, nb_epoch=80, validation_split=0.2, shuffle=True, callbacks=[model_checkpoint])
 
       print('predict test data')
       print(history.history.keys())
