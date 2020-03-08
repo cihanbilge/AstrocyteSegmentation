@@ -16,9 +16,9 @@ names = mydata.create_test_data()
 imgs_test = mydata.load_test_data()
 myunet = myUnet()
 
-model = myunet.get_unet()
+model = myunet.get_gesunet()
 
-model.load_weights('GESU_net_Modal.hdf5')
+model.load_weights('Modal_gesunet.hdf5')
 
 imgs_mask_test = model.predict(imgs_test, batch_size=1, verbose=1)
 
