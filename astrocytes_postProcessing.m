@@ -6,7 +6,7 @@ for im=1:length(image_list)
     side=subimage_size/2; %half length of one side of the boxes. Complete cell region must be inside of these boxes so need to be determined accordingly.
     centre=subimage_size*subimage_size/2; %Centre of the image. Since we assume that cell 
     %body is on the centre of the image, all detections whose centre is empty will be eliminated instantly.
-    load(sprintf('%d_connComp_V',image_list(im))); %all information extracted from target images, and saved in preprocessing step.
+    load(sprintf('myimage_%d_connComp_V',image_list(im))); %all information extracted from target images, and saved in preprocessing step.
     
     im_size=size(image);
     image_base=zeros(im_size);
