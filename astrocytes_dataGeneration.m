@@ -38,6 +38,7 @@ for k=1:length(image_list)
     %figure; imshow(image,[])
     image = imresize(image,imsizeFactor);
     sm=size(image);
+   
     %figure; imshow(image,[])
     unselectedOnes=[];
     %% detection of possible cell centers
