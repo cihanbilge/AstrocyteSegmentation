@@ -37,8 +37,9 @@ for k=1:length(image_list)
     image = image./max(image(:)); %image normalization
     %figure; imshow(image,[])
     image = imresize(image,imsizeFactor);
+    sm=size(image);
     %figure; imshow(image,[])
-    unselectedOnes=[];%?
+    unselectedOnes=[];
     %% detection of possible cell centers
     %this part base on directional ratio analysis to determine hihgly
     %anisotropic (star-shaped astrocytes) regions on the image.
